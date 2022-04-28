@@ -16,7 +16,7 @@ class ProductItem extends StatelessWidget {
       required this.price})
       : super(key: key);
   final String imageUrl;
-  final int id;
+  final String id;
   final String title;
   final double price;
   @override

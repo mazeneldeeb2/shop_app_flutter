@@ -9,7 +9,7 @@ class UserProductItem extends StatelessWidget {
   const UserProductItem(
       {Key? key, required this.id, required this.imageUrl, required this.title})
       : super(key: key);
-  final int id;
+  final String id;
 
   final String title;
   final String imageUrl;

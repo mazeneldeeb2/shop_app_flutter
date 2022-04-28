@@ -19,7 +19,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   bool validImage = true;
   Product savedProduct = Product(
     title: "",
-    id: 0,
+    id: "",
     description: "",
     imageUrl: "",
     price: 0,
@@ -29,7 +29,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void didChangeDependencies() {
     if (isInit) {
       if (!(ModalRoute.of(context)!.settings.arguments == null)) {
-        final int productId = ModalRoute.of(context)!.settings.arguments as int;
+        final String productId =
+            ModalRoute.of(context)!.settings.arguments as String;
 
         savedProduct =
             Provider.of<Products>(context).findProductById(productId);
@@ -74,18 +75,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveForm() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      if (savedProduct.id != 0) {
-        Provider.of<Products>(context, listen: false)
-            .updateProduct(savedProduct.id, savedProduct);
-      } else {
-        Provider.of<Products>(context, listen: false).addProduct(savedProduct);
-      }
-
-      _formKey.currentState!.reset();
-      Navigator.pop(context);
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid) {
+      return;
     }
+    _formKey.currentState!.save();
+    if (savedProduct.id != "") {
+      Provider.of<Products>(context, listen: false)
+          .updateProduct(savedProduct.id, savedProduct);
+    } else {
+      Provider.of<Products>(context, listen: false).addProduct(savedProduct);
+    }
+    Navigator.of(context).pop();
   }
 
   @override

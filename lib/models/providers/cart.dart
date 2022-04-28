@@ -3,9 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:shop_app/models/data/cart_item.dart';
 
 class Cart with ChangeNotifier {
-  Map<int, CartItem> _cartItems = {};
+  Map<String, CartItem> _cartItems = {};
 
-  Map<int, CartItem> get cartItems {
+  Map<String, CartItem> get cartItems {
     return {..._cartItems};
   }
 
@@ -17,7 +17,7 @@ class Cart with ChangeNotifier {
       .fold(0, (quantity, cardItem) => cardItem.quantity + quantity);
 
   void addCartItem({
-    required int productId,
+    required String productId,
     required String title,
     required double price,
   }) {
@@ -55,7 +55,7 @@ class Cart with ChangeNotifier {
     return totalAmount;
   }
 
-  void removeItem(int? id) {
+  void removeItem(String id) {
     _cartItems.remove(id);
     notifyListeners();
   }
@@ -65,7 +65,7 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeSingleItem(int? id) {
+  void removeSingleItem(String id) {
     if (_cartItems.containsKey(id)) {
       _cartItems[id]!.quantity = _cartItems[id]!.quantity - 1;
     } else {

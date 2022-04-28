@@ -5,17 +5,17 @@ import 'package:shop_app/constants.dart';
 import '../models/providers/cart.dart';
 
 class CartItemCard extends StatelessWidget {
-  final int? productId;
+  final String productId;
 
   const CartItemCard(
       {Key? key,
-      this.productId,
+      required this.productId,
       this.id,
       this.price,
       this.quantity,
       this.title})
       : super(key: key);
-  final int? id;
+  final String? id;
   final String? title;
   final double? price;
   final int? quantity;

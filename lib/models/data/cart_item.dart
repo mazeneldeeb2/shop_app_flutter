@@ -1,5 +1,5 @@
 class CartItem {
-  final int? id;
+  final String? id;
   final String? title;
   int quantity;
   final double? price;
