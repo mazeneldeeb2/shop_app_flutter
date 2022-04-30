@@ -6,59 +6,62 @@ import 'package:flutter/material.dart';
 import '../data/product.dart';
 
 class Products with ChangeNotifier {
+  bool _emptyData = false;
+  List<Product> _products = [];
   bool _showFavorites = false;
   bool get showFavoritesValue {
     return _showFavorites;
   }
 
+  bool get emptyData {
+    return _emptyData;
+  }
+
   static const urlString =
       'https://flutter-shop-app-96c3a-default-rtdb.europe-west1.firebasedatabase.app/products.json';
 
-  static final url = Uri.parse(urlString);
+  final url = Uri.parse(urlString);
+  Future<void> fetchProducts() async {
+    http.Response response;
+    try {
+      response = await http.get(url);
+    } catch (error) {
+      rethrow;
+    }
+    if (json.decode(response.body) == null) {
+      _emptyData = true;
+      notifyListeners();
+    } else {
+      try {
+        _emptyData = false;
+        notifyListeners();
+        var loadedProduct = json.decode(response.body) as Map<String, dynamic>;
+        final List<Product> loadedProducts = [];
+        loadedProduct.forEach((productId, productData) {
+          loadedProducts.add(Product(
+            id: productId,
+            title: productData['title'],
+            price: productData['price'],
+            isFavourite: productData['isFavourite'],
+            imageUrl: productData['imageUrl'],
+            description: productData['description'],
+          ));
+        });
+        _products = loadedProducts;
+        notifyListeners();
+      } catch (error) {
+        rethrow;
+      }
+    }
+  }
 
-  final List<Product> _products = [
-    Product(
-      id: "a",
-      title: 'Red Shirt',
-      description: 'A red shirt - it is pretty red!',
-      price: 29.99,
-      imageUrl:
-          'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
-    ),
-    Product(
-      id: "v",
-      title: 'Trousers',
-      description: 'A nice pair of trousers.',
-      price: 59.99,
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
-    ),
-    Product(
-      id: "c",
-      title: 'Yellow Scarf',
-      description: 'Warm and cozy - exactly what you need for the winter.',
-      price: 19.99,
-      imageUrl:
-          'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
-    ),
-    Product(
-      id: "d",
-      title: 'A Pan',
-      description: 'Prepare any meal you want.',
-      price: 49.99,
-      imageUrl:
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-    ),
-  ];
   List<Product> _favorites = [];
   List<Product> get favourites {
+    _favorites = _products.where((product) => product.isFavourite).toList();
     return [..._favorites];
   }
 
   List<Product> get products {
-    // if (_showFavorites) {
-    //   return _products.where((product) => product.isFavourite).toList();
-    // }
     return [..._products];
   }
 
@@ -81,41 +84,68 @@ class Products with ChangeNotifier {
     return _products.firstWhere((product) => product.id == id);
   }
 
-  void addProduct(Product newProduct) {
-    http
-        .post(
-      url,
-      body: json.encode(
-        {
-          'title': newProduct.title,
-          'description': newProduct.description,
-          'imageUrl': newProduct.imageUrl,
-          'price': newProduct.price,
-          'isFavourite': newProduct.isFavourite,
-        },
-      ),
-    )
-        .then((value) {
+  Future<void> addProduct(Product newProduct) async {
+    try {
+      var response = await http.post(
+        url,
+        body: json.encode(
+          {
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'imageUrl': newProduct.imageUrl,
+            'price': newProduct.price,
+            'isFavourite': newProduct.isFavourite,
+          },
+        ),
+      );
+
       Product addedProduct = Product(
         title: newProduct.title,
         description: newProduct.description,
         imageUrl: newProduct.imageUrl,
         price: newProduct.price,
-        id: json.decode(value.body)['name'],
+        id: json.decode(response.body)['name'],
       );
       _products.add(addedProduct);
       notifyListeners();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  void deleteProduct(String id) async {
+    final Uri productUrl = Uri.parse(
+        'https://flutter-shop-app-96c3a-default-rtdb.europe-west1.firebasedatabase.app/products/$id.json');
+    final existingProductIndex =
+        _products.indexWhere((element) => element.id == id);
+    var exisitngProduct = _products[existingProductIndex];
+    http.delete(productUrl).catchError((_) {
+      _products.insert(existingProductIndex, exisitngProduct);
+      notifyListeners();
     });
-  }
+    _products.removeAt(existingProductIndex);
 
-  void deleteProduct(String id) {
-    _products.removeWhere((element) => element.id == id);
     notifyListeners();
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final prodItem = _products.indexWhere((element) => element.id == id);
-    products[prodItem] = newProduct;
-    notifyListeners();
+    if (prodItem >= 0) {
+      final Uri productUrl = Uri.parse(
+          'https://flutter-shop-app-96c3a-default-rtdb.europe-west1.firebasedatabase.app/products/$id.json');
+      await http.patch(
+        productUrl,
+        body: json.encode(
+          {
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'price': newProduct.price,
+            'imageUrl': newProduct.imageUrl,
+          },
+        ),
+      );
+      products[prodItem] = newProduct;
+      notifyListeners();
+    }
   }
 }

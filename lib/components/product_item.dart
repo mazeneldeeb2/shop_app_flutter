@@ -85,6 +85,7 @@ class ProductItem extends StatelessWidget {
                 onPressed: () {
                   productProvider(context, listen: false)
                       .toggleIsFavouriteStatus();
+
                   Provider.of<Products>(context, listen: false)
                       .refreshProductsList();
                 },
