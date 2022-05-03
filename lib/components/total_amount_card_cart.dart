@@ -35,21 +35,61 @@ class TotalAmountCartCard extends StatelessWidget {
               ),
             ),
           ),
-          TextButton(
+          OrderButton(cartProvider: cartProvider, orderProvider: orderProvider),
+        ]),
+      ),
+    );
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    Key? key,
+    required this.cartProvider,
+    required this.orderProvider,
+  }) : super(key: key);
+
+  final Cart cartProvider;
+  final Orders orderProvider;
+
+  @override
+  State<OrderButton> createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  bool _isLoading = false;
+  @override
+  Widget build(BuildContext context) {
+    return _isLoading
+        ? const Padding(
+            padding: EdgeInsets.only(
+              left: kDefaultPadding,
+            ),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        : TextButton(
             child: const Text(
               "Order Now",
               style: TextStyle(
                 fontSize: 20.0,
               ),
             ),
-            onPressed: () {
-              orderProvider.addOrder(cartProvider.cartItems.values.toList(),
-                  cartProvider.totalAmount);
-              cartProvider.clearCart();
-            },
-          ),
-        ]),
-      ),
-    );
+            onPressed: widget.cartProvider.cartItems.isEmpty
+                ? null
+                : () async {
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    await widget.orderProvider.addOrder(
+                        widget.cartProvider.cartItems.values.toList(),
+                        widget.cartProvider.totalAmount);
+                    setState(() {
+                      _isLoading = false;
+                    });
+                    widget.cartProvider.clearCart();
+                  },
+          );
   }
 }

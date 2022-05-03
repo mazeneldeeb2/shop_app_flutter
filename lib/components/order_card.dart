@@ -24,7 +24,7 @@ class _OrderCardState extends State<OrderCard> {
         children: [
           ListTile(
             title: Text(
-              "${widget.order.amount}",
+              "\$${widget.order.amount}",
             ),
             subtitle: Text(
               DateFormat("dd/MM/yyyy hh:mm").format(widget.order.dateTime!),

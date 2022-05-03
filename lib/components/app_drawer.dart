@@ -17,18 +17,33 @@ class AppDrawer extends StatelessWidget {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.shop),
-            title: const Text("Shop"),
+            title: const Text(
+              "Shop",
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            ),
             onTap: () => Navigator.of(context).pushReplacementNamed("/"),
           ),
           ListTile(
             leading: const Icon(Icons.payment),
-            title: const Text("Orders"),
+            title: const Text(
+              "Orders",
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            ),
             onTap: () => Navigator.of(context)
                 .pushReplacementNamed(OrdersScreen.routeName),
           ),
           ListTile(
             leading: const Icon(Icons.account_circle),
-            title: const Text("User Products"),
+            title: const Text(
+              "User Products",
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            ),
             onTap: () => Navigator.of(context)
                 .pushReplacementNamed(UserProductScreen.routeName),
           ),
