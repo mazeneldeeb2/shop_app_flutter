@@ -3,7 +3,6 @@ import 'package:shop_app/models/data/cart_item.dart';
 import 'package:shop_app/models/data/order_item.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shop_app/models/providers/cart.dart';
 
 class Orders with ChangeNotifier {
   static const urlString =
