@@ -3,17 +3,20 @@ import 'package:flutter/foundation.dart';
 import 'package:shop_app/models/data/cart_item.dart';
 
 class Cart with ChangeNotifier {
-  Map<String, CartItem> _cartItems = {};
+  final String? token;
+
+  Cart(this.token, this._cartItems);
+  Map<String, CartItem>? _cartItems = {};
 
   Map<String, CartItem> get cartItems {
-    return {..._cartItems};
+    return {..._cartItems!};
   }
 
   void refreshCartItems() {
     notifyListeners();
   }
 
-  int get itemsCount => _cartItems.values
+  int get itemsCount => _cartItems!.values
       .fold(0, (quantity, cardItem) => cardItem.quantity + quantity);
 
   void addCartItem({
@@ -21,8 +24,8 @@ class Cart with ChangeNotifier {
     required String title,
     required double price,
   }) {
-    if (_cartItems.containsKey(productId)) {
-      _cartItems.update(
+    if (_cartItems!.containsKey(productId)) {
+      _cartItems!.update(
           productId,
           (value) => CartItem(
                 id: value.id,
@@ -31,7 +34,7 @@ class Cart with ChangeNotifier {
                 quantity: value.quantity + 1,
               ));
     } else {
-      _cartItems.putIfAbsent(
+      _cartItems!.putIfAbsent(
           productId,
           () => CartItem(
                 id: productId,
@@ -43,12 +46,12 @@ class Cart with ChangeNotifier {
   }
 
   int get cartItemCount {
-    return _cartItems.length;
+    return _cartItems!.length;
   }
 
   double get totalAmount {
     double totalAmount = 0.0;
-    _cartItems.forEach((key, cartItem) {
+    _cartItems!.forEach((key, cartItem) {
       totalAmount += cartItem.price! * cartItem.quantity;
     });
 
@@ -56,7 +59,7 @@ class Cart with ChangeNotifier {
   }
 
   void removeItem(String id) {
-    _cartItems.remove(id);
+    _cartItems!.remove(id);
     notifyListeners();
   }
 
@@ -66,8 +69,8 @@ class Cart with ChangeNotifier {
   }
 
   void removeSingleItem(String id) {
-    if (_cartItems.containsKey(id)) {
-      _cartItems[id]!.quantity = _cartItems[id]!.quantity - 1;
+    if (_cartItems!.containsKey(id)) {
+      _cartItems![id]!.quantity = _cartItems![id]!.quantity - 1;
     } else {
       removeItem(id);
     }

@@ -13,11 +13,16 @@ import 'package:shop_app/screens/products_overview_screen.dart';
 import 'package:shop_app/screens/user_products_screen.dart';
 
 import 'models/providers/products.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
 }
-
+// final authUri = Uri.https(
+     //   'identitytoolkit.googleapis.com', '/v1/accounts:$urlSegment', params);
+     //static const params = {
+    //'key': 'AIzaSyBeC0dKXtoCu3r4gyrQX0W5Mf3VvDLoDYw',
+  //};
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
@@ -25,17 +30,27 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => Products(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => Orders(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => Cart(),
-        ),
-        ChangeNotifierProvider(
           create: (_) => Auth(),
-        )
+        ),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          create: (_) => Orders("", "", []),
+          update: (context, auth, previousOrders) =>
+              Orders(auth.token, auth.userId, previousOrders?.orders),
+        ),
+        ChangeNotifierProxyProvider<Auth, Cart>(
+          create: (_) => Cart("", {}),
+          update: (context, auth, previousCart) =>
+              Cart(auth.token, previousCart?.cartItems),
+        ),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          create: (context) => Products(
+            "",
+            "",
+            [],
+          ),
+          update: (context, auth, previousProducts) => Products(
+              auth.token , auth.userId , previousProducts!.products),
+        ),
       ],
       child: Consumer<Auth>(
         builder: (context, auth, child) => MaterialApp(
@@ -47,8 +62,14 @@ class MyApp extends StatelessWidget {
               secondary: kSecondaryColor,
             ),
           ),
-          home:
-              auth.isAuth ? const ProductsOverviewScreen() : const AuthScreen(),
+          home: auth.isAuth
+              ? const ProductsOverviewScreen()
+              : FutureBuilder(
+                  future: auth.tryAutoLogin(),
+                  builder: (context, authSnapShot) =>
+                      authSnapShot.connectionState == ConnectionState.waiting
+                          ? const SplashScreen()
+                          : const AuthScreen()),
           routes: {
             ProductDetailsScreen.routeName: (context) =>
                 const ProductDetailsScreen(),

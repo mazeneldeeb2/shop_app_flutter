@@ -42,9 +42,13 @@ class _ProductsGridViewState extends State<ProductsGridView> {
             ],
           ),
         );
-      }).then((_) => setState(() {
+      }).then(
+        (_) => setState(
+          () {
             _isLoading = false;
-          }));
+          },
+        ),
+      );
 
       _isInit = false;
       super.didChangeDependencies();

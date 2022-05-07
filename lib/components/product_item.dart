@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/constants.dart';
 import 'package:shop_app/models/data/product.dart';
+import 'package:shop_app/models/providers/auth.dart';
 import 'package:shop_app/screens/product_details_screen.dart';
 
 import '../models/providers/cart.dart';
@@ -23,6 +24,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<Cart>(context, listen: false);
     const productProvider = Provider.of<Product>;
+    final auth = Provider.of<Auth>(context, listen: false);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(kDefaultPadding),
@@ -84,7 +86,10 @@ class ProductItem extends StatelessWidget {
                 ),
                 onPressed: () {
                   productProvider(context, listen: false)
-                      .toggleIsFavouriteStatus();
+                      .toggleIsFavouriteStatus(
+                    auth.token,
+                    auth.userId,
+                  );
 
                   Provider.of<Products>(context, listen: false)
                       .refreshProductsList();

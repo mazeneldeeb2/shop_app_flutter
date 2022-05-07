@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/models/data/errors_exception.dart';
@@ -104,12 +103,12 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  void _showErrorDialog(String messege) {
+  void _showErrorDialog(String message) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('An error occurred!'),
-        content: Text(messege),
+        content: Text(message),
         actions: [
           TextButton(
             child: const Text('Okay'),

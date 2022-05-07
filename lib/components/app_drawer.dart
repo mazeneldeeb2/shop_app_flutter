@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/screens/auth_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/models/providers/auth.dart';
 import 'package:shop_app/screens/order_screen.dart';
 import 'package:shop_app/screens/user_products_screen.dart';
 
@@ -55,18 +56,20 @@ class AppDrawer extends StatelessWidget {
                 .pushReplacementNamed(UserProductScreen.routeName),
           ),
           ListTile(
-            leading: const Icon(
-              Icons.login,
-            ),
-            title: const Text(
-              "Sign up / login",
-              style: TextStyle(
-                fontSize: 18,
+              leading: const Icon(
+                Icons.logout,
               ),
-            ),
-            onTap: () => Navigator.of(context)
-                .pushReplacementNamed(AuthScreen.routeName),
-          ),
+              title: const Text(
+                "Logout",
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(context, '/');
+                Provider.of<Auth>(context, listen: false).logout();
+              }),
         ],
       ),
     );

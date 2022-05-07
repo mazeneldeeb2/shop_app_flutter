@@ -5,22 +5,26 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Orders with ChangeNotifier {
-  static const urlString =
-      'https://flutter-shop-app-96c3a-default-rtdb.europe-west1.firebasedatabase.app/orders.json';
+  final String? token;
+  final String? userId;
+  Orders(this.token, this.userId, this._orders);
 
-  final url = Uri.parse(urlString);
   // ignore: prefer_final_fields
-  List<OrderItem> _orders = [];
+  List<OrderItem>? _orders = [];
   bool _emptyOrders = true;
   bool get emptyOrders {
     return _emptyOrders;
   }
 
   List<OrderItem> get orders {
-    return [..._orders];
+    return [..._orders!];
   }
 
   Future<void> addOrder(List<CartItem> newCartProducts, double total) async {
+    final urlString =
+        'https://flutter-shop-app-96c3a-default-rtdb.europe-west1.firebasedatabase.app/orders/$userId.json?auth=$token';
+
+    final url = Uri.parse(urlString);
     final timeStamp = DateTime.now();
     http.Response response;
     try {
@@ -45,7 +49,7 @@ class Orders with ChangeNotifier {
       rethrow;
     }
 
-    _orders.insert(
+    _orders!.insert(
       0,
       OrderItem(
         id: json.decode(response.body)['name'],
@@ -58,6 +62,10 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchOrders() async {
+    final urlString =
+        'https://flutter-shop-app-96c3a-default-rtdb.europe-west1.firebasedatabase.app/orders/$userId.json?auth=$token';
+
+    final url = Uri.parse(urlString);
     http.Response response;
     try {
       response = await http.get(url).timeout(const Duration(seconds: 3));
