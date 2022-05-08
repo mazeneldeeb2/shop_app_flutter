@@ -1,6 +1,12 @@
 # shop_app
 
-The shop app in the udemy course of Maximlian Schwarzmuller
+Shop application created by Flutter(dart)
+Features:
+1- state management using Provider package.
+2- dealing with APIs using http package.
+3- dealing with user authentication of firebase without using their Sdk nor package only using http pacakage.
+4- implementing some animations.
+5- handling user input and post it to server.
 ## Getting Started
 
 This project is a starting point for a Flutter application.
