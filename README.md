@@ -1,7 +1,9 @@
 # shop_app
 
 Shop application created by Flutter(dart)
+
 Features:
+
 1- state management using Provider package.
 
 2- dealing with APIs using http package.
